@@ -28,9 +28,11 @@ class Producto{
 		
 		string getPrecio();
 		
+		string getDescripcion();
+		
 		int getStock();
 		
-		void agregarProducto(string _nombre, string _descripcion, string _precio, int _stock, string usuario);
+		void agregarProducto(string _nombre, string _descripcion, string _precio, int _stock);
 		
 		void editarDatos(int ancho, string usuario);
 		
@@ -51,6 +53,11 @@ string Producto::getPrecio(){
 	
 }
 
+string Producto::getDescripcion(){
+	
+	return descripcion;
+}
+
 int Producto::getStock(){
 	
 	return stock;
@@ -58,7 +65,7 @@ int Producto::getStock(){
 }
 
 
-void Producto::agregarProducto(string _nombre, string _descripcion, string _precio, int _stock, string usuario){
+void Producto::agregarProducto(string _nombre, string _descripcion, string _precio, int _stock){
 	
 	nombre = _nombre;
 	
@@ -67,8 +74,6 @@ void Producto::agregarProducto(string _nombre, string _descripcion, string _prec
 	precio = _precio;
 	
 	stock = _stock;
-	
-	guardarProductoEnArchivos(usuario);
 }
 
 void Producto::editarDatos(int ancho, string usuario){
