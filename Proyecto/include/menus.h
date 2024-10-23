@@ -30,7 +30,9 @@ bool fechaVencimientoTarjetaValida(string _fechaVencimientoTarjeta);
 
 void menuSesionIniciada(Cuenta &cuenta, vector <Producto> &productos);
 
-void menuSesionIniciada_AgregarProducto(string usuario, int ancho);
+void menuSesionIniciada_MostrarTodosLosProductos(vector <Producto> &productos, int ancho);
+
+void menuSesionIniciada_AgregarProducto(vector <Producto> &productos, string usuario, int ancho);
 
 
 
@@ -469,9 +471,16 @@ void menuSesionIniciada(Cuenta &cuenta, vector <Producto> &productos){
 				break;
 			}
 			
+			case 2:{
+				
+				menuSesionIniciada_MostrarTodosLosProductos(productos, ancho);
+				
+				break;
+			}
+			
 			case 6:{
 				
-				menuSesionIniciada_AgregarProducto(cuenta.getUsuario(), ancho);
+				menuSesionIniciada_AgregarProducto(productos, cuenta.getUsuario(), ancho);
 				
 				break;
 			}
@@ -490,7 +499,82 @@ void menuSesionIniciada(Cuenta &cuenta, vector <Producto> &productos){
 	
 }
 
-void menuSesionIniciada_AgregarProducto(string usuario, int ancho){
+void menuSesionIniciada_MostrarTodosLosProductos(vector <Producto> &productos, int ancho){
+	
+	textoNormal("Seleccione como desea verlos.", ancho, true);
+	
+	textoNormal("1. Por precio de mayor a menor.", ancho, true);
+	
+	textoNormal("2. Por precio de menor a mayor", ancho, true);
+	
+	textoNormal("3. Sin filtro", ancho, true);
+	
+	textoNormal("Ingrese la opción: ", ancho, false);
+	
+	int op;
+	
+	cin >> op;
+	
+	cin.ignore();
+	
+	
+	switch (op){
+		
+		case 1:{
+			
+			if(productos.size() > 1){
+			
+				ordenarProductosPorPrecioMayor(productos, 0, productos.size() - 1);
+			}
+				
+			for(int i = 0; i < productos.size(); i++){
+				
+				string mensaje = to_string(i + 1) + ". Nombre: " + productos[i].getNombre() + ", Descripción: " + productos[i].getDescripcion() + ", Precio: " + productos[i].getPrecio() + ", Stock: " + to_string(productos[i].getStock()) + ".";
+					
+				textoNormal(mensaje, ancho, true);
+					
+			}
+				
+			break;
+		}
+		
+		case 2:{
+			
+			if(productos.size() > 1){
+			
+				ordenarProductosPorPrecioMenor(productos, 0, productos.size() - 1);
+			}
+				
+			for(int i = 0; i < productos.size(); i++){
+					
+				string mensaje = to_string(i + 1) + ". Nombre: " + productos[i].getNombre() + ", Descripción: " + productos[i].getDescripcion() + ", Precio: " + productos[i].getPrecio() + ", Stock: " + to_string(productos[i].getStock()) + ".";
+						
+				textoNormal(mensaje, ancho, true);
+					
+			}
+			
+			break;
+		}
+		
+		default:{
+			
+			for(int i = 0; i < productos.size(); i++){
+				
+				string mensaje = to_string(i + 1) + ". Nombre: " + productos[i].getNombre() + ", Descripción: " + productos[i].getDescripcion() + ", Precio: " + productos[i].getPrecio() + ", Stock: " + to_string(productos[i].getStock()) + ".";
+						
+				textoNormal(mensaje, ancho, true);
+					
+			}
+			
+			break;
+		}
+	}
+
+	system("pause");
+	
+}
+
+void menuSesionIniciada_AgregarProducto(vector <Producto> &productos, string usuario, int ancho){
 	
 	string nombre;
 	
@@ -536,7 +620,11 @@ void menuSesionIniciada_AgregarProducto(string usuario, int ancho){
 	
 	Producto producto;
 	
-	producto.agregarProducto(nombre, descripcion, precio, stock, usuario);
+	producto.agregarProducto(nombre, descripcion, precio, stock);
+	
+	producto.guardarProductoEnArchivos(usuario);
+	
+	productos.push_back(producto);
 }
 
 
