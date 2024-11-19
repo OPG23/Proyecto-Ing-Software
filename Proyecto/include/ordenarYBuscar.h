@@ -4,8 +4,6 @@
 
 #include "cuentas.h"
 
-#include "productos.h"
-
 using namespace std;
 
 char minuscula(char l) {
@@ -41,15 +39,15 @@ void ordenarCuentas(vector<Cuenta> &cuentas,int inicio, int fin){
     
     der = fin;
     
-    pivote = cuentas[(izq+der)/2].getUsuario();
+    pivote = aMinusculas(cuentas[(izq+der)/2].getUsuario());
     
 
     do{
-        while(cuentas[izq].getUsuario() < pivote && izq<fin){
+        while(aMinusculas(cuentas[izq].getUsuario()) < pivote && izq < fin){
             izq++;
         }
 
-        while(cuentas[der].getUsuario() > pivote && der > inicio){
+        while(aMinusculas(cuentas[der].getUsuario()) > pivote && der > inicio){
             der --;
         }
 
@@ -79,31 +77,38 @@ void ordenarCuentas(vector<Cuenta> &cuentas,int inicio, int fin){
 
 bool busquedaCuentaLogin(vector<Cuenta> &cuentas, string usuario, string clave, Cuenta &cuenta){
 	
-	usuario = aMinusculas(usuario);
-	
-	int inicio = 0;
-	
-	int fin = cuentas.size() - 1;
-	
-	while(inicio <= fin){
+	if(cuentas.size() > 0){
 		
-		int medio = inicio + (fin - inicio) / 2;
+		usuario = aMinusculas(usuario);
+	
+		int inicio = 0;
 		
-		if(aMinusculas(cuentas[medio].getUsuario()) == usuario){
+		int fin = cuentas.size() - 1;
+		
+		while(inicio <= fin){
 			
-			if(cuentas[medio].getClave() == clave){
+			int medio = inicio + (fin - inicio) / 2;
+			
+			if(aMinusculas(cuentas[medio].getUsuario()) == usuario){
 				
-				cuenta = cuentas[medio];
+				if(cuentas[medio].getClave() == clave){
+					
+					cuenta = cuentas[medio];
+					
+					return true;
+					
+				}else{
+					
+					return false;
+				}
+			}else if(aMinusculas(cuentas[medio].getUsuario()) < usuario){
 				
-				return true;
+				inicio = medio + 1;
+			}else{
 				
+				fin = medio - 1;
 			}
-		}else if(aMinusculas(cuentas[medio].getUsuario()) < usuario){
 			
-			inicio = medio + 1;
-		}else{
-			
-			fin = medio - 1;
 		}
 		
 	}
@@ -112,7 +117,7 @@ bool busquedaCuentaLogin(vector<Cuenta> &cuentas, string usuario, string clave, 
 	
 }
 
-int busquedaPosicionCuenta(vector<Cuenta> &cuentas, string usuario) {
+int busquedaPosicionCuenta(vector<Cuenta> &cuentas, string usuario, int &ubicador) {
     
     usuario = aMinusculas(usuario);
     
@@ -120,15 +125,18 @@ int busquedaPosicionCuenta(vector<Cuenta> &cuentas, string usuario) {
     
     int fin = cuentas.size() - 1;
     
+    int medio;
+    
     while (inicio <= fin) {
     	
-        int medio = inicio + (fin - inicio) / 2;
+        medio = inicio + (fin - inicio) / 2;
         
         string usuarioMedio = aMinusculas(cuentas[medio].getUsuario());
         
         if (usuarioMedio == usuario) {
         	
-            return -1;
+            return medio;
+            
         } else if (usuarioMedio < usuario) {
         	
             inicio = medio + 1;
@@ -138,8 +146,9 @@ int busquedaPosicionCuenta(vector<Cuenta> &cuentas, string usuario) {
         }
     }
     
+    ubicador = medio;
     
-    return inicio;
+    return -1;
 }
 
 void ordenarProductosPorPrecioMenor(vector<Producto> &productos,int inicio, int fin){
@@ -190,11 +199,52 @@ void ordenarProductosPorPrecioMenor(vector<Producto> &productos,int inicio, int 
 
 }
 
-void ordenarProductosPorPrecioMayor(vector<Producto> &productos,int inicio, int fin){
+void ordenarProductosPorPrecioMayor(vector<Producto> &productos, int inicio, int fin) {
+    
+    int izq = inicio;
+    
+    int der = fin;
+    
+    double pivote = stod(productos[(izq + der) / 2].getPrecio());
+    
+    Producto aux;
+    
+    do {
+       
+        while(stod(productos[izq].getPrecio()) > pivote && izq <= fin) {
+            izq++;
+        }
+        
+        while(stod(productos[der].getPrecio()) < pivote && der >= inicio) {
+            der--;
+        }
+        
+        if (izq <= der) {
+            
+            aux = productos[izq];
+            productos[izq] = productos[der];
+            productos[der] = aux;
+            
+            izq++;
+            der--;
+        }
+    } while (izq <= der);
+    
+    
+    if (inicio < der) {
+        ordenarProductosPorPrecioMayor(productos, inicio, der);
+    }
+    
+    if (fin > izq) {
+        ordenarProductosPorPrecioMayor(productos, izq, fin);
+    }
+}
+
+void ordenarProductosPorNombre(vector<Producto> &productos,int inicio, int fin){
 	
 	int izq, der;
     
-	double pivote;
+	string pivote;
 	
 	Producto aux;
     
@@ -202,15 +252,15 @@ void ordenarProductosPorPrecioMayor(vector<Producto> &productos,int inicio, int 
     
     der = fin;
     
-    pivote = stod(productos[(izq+der)/2].getPrecio());
+    pivote = aMinusculas(productos[(izq+der)/2].getNombre());
     
 
     do{
-        while(stod(productos[izq].getPrecio()) > pivote && izq > fin){
+        while(aMinusculas(productos[izq].getNombre()) < pivote && izq<fin){
             izq++;
         }
 
-        while(stod(productos[der].getPrecio()) < pivote && der < inicio){
+        while(aMinusculas(productos[der].getNombre()) > pivote && der > inicio){
             der --;
         }
 
@@ -229,11 +279,158 @@ void ordenarProductosPorPrecioMayor(vector<Producto> &productos,int inicio, int 
     }while(izq <= der);
 
     if(inicio < der){
-        ordenarProductosPorPrecioMayor(productos,inicio,der);
+        ordenarProductosPorNombre(productos,inicio,der);
     }
 
     if(fin > izq){
-        ordenarProductosPorPrecioMayor(productos,izq,fin);
+        ordenarProductosPorNombre(productos,izq,fin);
     }
 
 }
+
+Producto busquedaPosicionProducto(vector<Producto> &productos, string nombreProducto, int ancho) {
+    
+    Producto noAgregarProducto;
+    
+    noAgregarProducto.agregarProducto("noAgregarProducto15478896587549852456586465132165489","","",0,"");
+    
+    if(productos.size() > 0){
+    	
+    	nombreProducto = aMinusculas(nombreProducto);
+    
+	    vector<Producto> productosOrdenados = productos;
+	    
+	    vector<Producto> productosEncontrados;
+	    
+	    ordenarProductosPorNombre(productosOrdenados, 0, productosOrdenados.size() - 1);
+	    
+	    int inicio = 0;
+	    
+	    int fin = productosOrdenados.size() - 1;
+	    
+	    int iterador = 1;
+	    
+	    while (inicio <= fin) {
+	    	
+	        int medio = inicio + (fin - inicio) / 2;
+	        
+	        string productoMedio = aMinusculas(productosOrdenados[medio].getNombre());
+	        
+	        if (productoMedio == nombreProducto) {
+	        	
+	        	string mensaje = to_string(iterador++) + ". Nombre: " + productosOrdenados[medio].getNombre() + ", Descripción: " + productosOrdenados[medio].getDescripcion() + ", Precio: " + productosOrdenados[medio].getPrecio() + ", Stock: " + to_string(productosOrdenados[medio].getStock()) + ".";
+				
+				productosEncontrados.push_back(productosOrdenados[medio]);
+				
+				productosOrdenados.erase(productosOrdenados.begin() + medio);
+				
+				textoNormal(mensaje, ancho, true);
+				
+				int izquierda = medio - 1;
+		        
+				while (izquierda >= inicio && aMinusculas(productosOrdenados[izquierda].getNombre()) == nombreProducto) {
+		        	
+		        	string mensaje = to_string(iterador++) + ". Nombre: " + productosOrdenados[izquierda].getNombre() + ", Descripción: " + productosOrdenados[izquierda].getDescripcion() + ", Precio: " + productosOrdenados[izquierda].getPrecio() + ", Stock: " + to_string(productosOrdenados[izquierda].getStock()) + ".";
+		        	
+		        	textoNormal(mensaje, ancho, true);
+		        	
+				    productosEncontrados.push_back(productosOrdenados[izquierda]);
+		        
+				    izquierda--;
+		        
+				}
+		
+		        int derecha = medio + 1;
+		
+		        while (derecha <= fin && aMinusculas(productosOrdenados[derecha].getNombre()) == nombreProducto) {
+					
+					string mensaje = to_string(iterador++) + ". Nombre: " + productosOrdenados[derecha].getNombre() + ", Descripción: " + productosOrdenados[derecha].getDescripcion() + ", Precio: " + productosOrdenados[derecha].getPrecio() + ", Stock: " + to_string(productosOrdenados[derecha].getStock()) + ".";
+					
+					textoNormal(mensaje, ancho, true);
+					
+		            productosEncontrados.push_back(productosOrdenados[derecha]);
+		
+		            derecha++;
+		        }
+	
+	        	break;
+	            
+	        } else if (productoMedio < nombreProducto) {
+	        	
+	            inicio = medio + 1;
+	            
+	        } else {
+	        	
+	            fin = medio - 1;
+	        }
+	    }
+	    
+	    if(productosEncontrados.size() > 0){
+	    	
+	    	int posicionProducto;
+	    	
+	    	textoNormal("Ingrese el numero del producto que desea agregar, 0 si no desea agregar ninguno: ", ancho, false);
+	    	
+	    	cin >> posicionProducto;
+	    	
+	    	if(posicionProducto > 0 && posicionProducto <= productosEncontrados.size()){
+	    		
+	    		return productosEncontrados[posicionProducto - 1];
+			
+			}else if(posicionProducto == 0){
+				
+				textoNormal("Regresando al menú anterior.", ancho, true);
+					
+				return noAgregarProducto;
+			}else{
+				
+				textoNormal("ID no encontrada.", ancho, true);
+				
+				return noAgregarProducto;
+			}
+		}else{
+	    
+	    	return noAgregarProducto;
+			
+		}
+	}else{
+		
+		return noAgregarProducto;
+		
+	}
+    
+    
+}
+
+bool buscarProductoPorID(Producto &producto, int ID, vector<Producto> productos){
+	
+	for(int i = 0; i < productos.size(); i++){
+		
+		if(ID == stoi(productos[i].getID())){
+			
+			producto = productos[i];
+			
+			return true;
+		}
+	}
+	
+	return false;
+	
+}
+
+int conocerPosicionProductoPorID(int ID, vector<Producto> productos){
+	
+	for(int i = 0; i < productos.size(); i++){
+		
+		if(ID == stoi(productos[i].getID())){
+			
+			return i;
+		}
+	}
+	
+	return -1;
+	
+}
+
+
+
