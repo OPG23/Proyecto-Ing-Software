@@ -12,6 +12,8 @@ class Producto{
 	
 	protected:
 		
+		string id;
+		
 		string nombre;
 		
 		string descripcion;
@@ -30,15 +32,19 @@ class Producto{
 		
 		string getDescripcion();
 		
+		string getID();
+		
 		int getStock();
 		
-		void agregarProducto(string _nombre, string _descripcion, string _precio, int _stock);
+		void agregarProducto(string _nombre, string _descripcion, string _precio, int _stock, string id);
 		
 		void editarDatos(int ancho, string usuario);
 		
 		void guardarProductoEnArchivos(string usuario);
 		
 		void verificarCarpetaProducto(string usuario);
+		
+		bool actualizarStock(int cantidadComprada, string usuario);
 };
 
 string Producto::getNombre(){
@@ -58,6 +64,11 @@ string Producto::getDescripcion(){
 	return descripcion;
 }
 
+string Producto::getID(){
+	
+	return id;
+}
+
 int Producto::getStock(){
 	
 	return stock;
@@ -65,7 +76,7 @@ int Producto::getStock(){
 }
 
 
-void Producto::agregarProducto(string _nombre, string _descripcion, string _precio, int _stock){
+void Producto::agregarProducto(string _nombre, string _descripcion, string _precio, int _stock, string _id){
 	
 	nombre = _nombre;
 	
@@ -74,6 +85,8 @@ void Producto::agregarProducto(string _nombre, string _descripcion, string _prec
 	precio = _precio;
 	
 	stock = _stock;
+	
+	id = _id;
 }
 
 void Producto::editarDatos(int ancho, string usuario){
@@ -92,6 +105,8 @@ void Producto::editarDatos(int ancho, string usuario){
 	
 	cin >> op;
 	
+	cin.ignore();
+	
 	switch(op){
 		
 		case 1:{
@@ -99,6 +114,8 @@ void Producto::editarDatos(int ancho, string usuario){
 			string nuevoNombre;
 			
 			textoNormal("Ingrese el nuevo nombre: ", ancho, false);
+			
+			getline(cin, nuevoNombre);
 			
 			nombre = nuevoNombre;
 			
@@ -184,7 +201,7 @@ void Producto::verificarCarpetaProducto(string usuario){
 
 void Producto::guardarProductoEnArchivos(string usuario){
 	
-	string ruta = "../Productos/" + usuario + "/" + nombre + ".csv";
+	string ruta = "../Productos/" + usuario + "/" + id + ".csv";
 	
 	verificarCarpetaProducto(usuario);
 	
@@ -192,9 +209,27 @@ void Producto::guardarProductoEnArchivos(string usuario){
 	
 	guardarProducto.open(ruta);
 	
-	guardarProducto << "Nombre;Descripción;Precio;Stock";
+	guardarProducto << "Nombre;Descripción;Precio;Stock;ID";
 	
-	guardarProducto << endl << nombre << ";" << descripcion<< ";" << precio << ";" << stock;
+	guardarProducto << endl << nombre << ";" << descripcion<< ";" << precio << ";" << stock << ";" << id;
 	
 	guardarProducto.close();
+}
+
+bool Producto::actualizarStock(int cantidadComprada, string usuario){
+	
+	if(cantidadComprada > stock){
+		
+		return false;
+		
+	}else{
+		
+		stock -= cantidadComprada;
+		
+		guardarProductoEnArchivos(usuario);
+		
+		return true;
+		
+	}
+	
 }
